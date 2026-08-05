@@ -3,5 +3,19 @@ const std = @import("std");
 
 pub fn run(init: std.process.Init) !void {
     const args = try init.minimal.args.toSlice(init.arena.allocator());
-    _ = args;
+    var stdout_buffer: [1024]u8 = undefined;                                                                                   
+    var stdout_file_writer: std.Io.File.Writer =                                                                               
+        .init(.stdout(), init.io, &stdout_buffer);                                                                             
+    const stdout = &stdout_file_writer.interface;                                                                              
+                                                                                                                                
+    if (args.len > 1 and std.mem.eql(u8, args[1], "--version")) {                                                              
+        try stdout.print("pig {s}\n", .{build_options.version});                                                               
+    } else {                                                                                                                   
+        try stdout.print(                                                                                                      
+            "Pig phase 0 scaffold is installed. Run `pig --version` to verify the CLI.\n",                                     
+            .{},                                                                                                               
+        );                                                                                                                     
+    }                                                                                                                          
+                                                                                                                              
+   try stdout.flush();
 } 
